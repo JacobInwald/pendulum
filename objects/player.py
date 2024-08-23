@@ -3,7 +3,7 @@ from random import random
 from .object import *
 from .utils import *
 from pygame.locals import *
-
+from time import time
 
 class Player(Object):
     
@@ -11,7 +11,8 @@ class Player(Object):
         super().__init__(pos, size, id)
         self.is_gravity = True
         self.is_collision = True
-        self.speed = 3
+        self.speed = 25
+        self.update_time = time()
     
     
     def update_movement(self, dir):
@@ -24,10 +25,12 @@ class Player(Object):
     
     
     def update(self, keys, others):
+        deltaTime = time() - self.update_time
+        self.update_time = time()
         dir = np.array([keys[K_RIGHT] - keys[K_LEFT], 0])
         self.update_movement(dir)
 
-        self.pos = self.pos + self.vel
+        self.pos = self.pos + self.vel * deltaTime
         
         while any(self.is_colliding(other) for other in others):
             self.pos -= self.vel

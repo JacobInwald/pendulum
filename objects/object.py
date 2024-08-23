@@ -13,16 +13,8 @@ class Object:
         self.is_collision = True
 
 
-    def sprite(self):
-        sprite = pygame.Surface(self.size)
-        sprite = sprite.convert()
-        sprite.fill((0, 0, 0))
-        sprite.set_alpha(25)
-        return sprite
-
-
     def render(self, screen):
-        screen.blit(self.sprite(), self.pos)
+        pygame.draw.rect(screen, (10, 10, 10), pygame.Rect(*self.pos, *self.size))
         return True
     
     def update(self, keys, others):

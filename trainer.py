@@ -11,14 +11,27 @@ def new_network():
     w2 = (np.random.rand(2, 3) - 0.5) * 1e-3
     return w1, w2
 
-def feed_forward(inp, w1, w2):
+def feed_forward(inp, w1, w2, display=False):
     hid = np.dot(w1, inp)
-    hid = np.tanh(hid)
+    o_hid = np.tanh(hid)
     out = np.dot(w2, hid)
-    out = np.tanh(out)
-    out[0] = 0 if out[0] < 0 else 1
-    out[1] = 0 if out[1] < 0 else 1
-    out = {K_LEFT: int(out[0]), K_RIGHT: int(out[1])}
+    o_out = np.tanh(out)
+    o_out[0] = 0 if o_out[0] < 0 else 1
+    o_out[1] = 0 if o_out[1] < 0 else 1
+    o_out = {K_LEFT: int(o_out[0]), K_RIGHT: int(o_out[1])}
+    
+    if display:
+        font = pygame.font.Font(None, 20)
+        
+        surf = pygame.Surface((200, 100))
+        surf.fill((240, 240, 240))
+        
+        pygame.draw.circle(surf, (10, 10, 10), (20, 20), 20, width=2)
+        pygame.draw.circle(surf, (10, 10, 10), (20, 60), 20, width=2)
+        pygame.draw.circle(surf, (10, 10, 10), (20, 100), 20, width=2)
+        pygame.draw.circle(surf, (10, 10, 10), (20, 140), 20, width=2)
+        return surf
+    
     return out
 
 def merge(w_1,  w_2):
@@ -28,6 +41,8 @@ def merge(w_1,  w_2):
     w1 = w1_1 + w1_2 / 2
     w2 = w2_1 + w2_2 / 2
     return w1, w2
+
+
 
 
 class GeneticTraining:
@@ -46,6 +61,7 @@ class GeneticTraining:
         self._running = True
         self.size = self.width, self.height = 640, 480
         self.screen = pygame.display.set_mode(self.size)
+        
     
     def check_quit(self):
         for event in pygame.event.get():
@@ -69,7 +85,7 @@ class GeneticTraining:
         background = background.convert()
         background.fill((240, 240, 240))
         
-        title_str = f"Generation Number {self.gen_num} | Size: {len(self.gen)} | Prev Best: {self.best_fitness}"
+        title_str = f"Generation Number {self.gen_num} | Size: {len(self.gen)} | Prev Best: {self.best_fitness:.2f}"
         frame_st = time()
         while any_running:
             for event in pygame.event.get():
@@ -80,8 +96,6 @@ class GeneticTraining:
             
             self.screen.blit(background, (0, 0))
             
-            self.screen.blit(*self.title(title_str + f" | Frame: {frame_count} | FPS: {(1 / (time() - frame_st)):.2f}"))
-            frame_st = time()
             for i, game in enumerate(games):
                 if game._running:
                     game.run_step(feed_forward(game.inputs(), *self.gen[i]))
@@ -89,11 +103,19 @@ class GeneticTraining:
                     
             any_running = any(game._running for game in games)
             
+            self.screen.blit(*self.title(title_str + f" | Current Best: {(frame_count / 60):.2f} | Frame: {frame_count} | FPS: {(1 / (time() - frame_st)):.2f}"))
+            frame_st = time()
+
+            # Show the best ones network
+            # best = self.gen[np.argmax(self.fitness)]
+            # surf = feed_forward(games[np.argmax(self.fitness)], *best, display=True)
+            
+            
+            
             pygame.display.flip()
             frame_count += 1
             
         self.gen_num += 1
-        # pygame.quit()
     
     
     def mutate(self, w1, w2):
@@ -121,4 +143,4 @@ class GeneticTraining:
         
 
 g = GeneticTraining(100, 0.1, 0.1)
-g.run(100)
+g.run(20)
