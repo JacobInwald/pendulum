@@ -33,7 +33,7 @@ def feed_forward(inp, w1, w2, display=False):
     
     if display:
         
-        cap = 5e-1
+        cap = 2e-1
         
         surf = pygame.Surface((200, 100))
         surf.fill((240, 240, 240))

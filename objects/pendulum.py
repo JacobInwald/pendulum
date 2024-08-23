@@ -15,8 +15,7 @@ class Pendulum(Object):
         self.length = 100
         self.mass = 1
         self.vel = np.array([.0, .0])
-        # self.pos = self.r_pos() + clip(np.array([((random() > 0.5) * 2 - 1) * 3, -self.length]), self.length)
-        self.pos = self.r_pos() + clip(np.array([3, -self.length]), self.length)
+        self.pos = self.r_pos() + clip(np.array([((random() > 0.5) * 2 - 1) * 3, -self.length]), self.length)
         
         self.update_time = time()
     
