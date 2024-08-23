@@ -15,7 +15,7 @@ class Pendulum(Object):
         self.length = 100
         self.mass = 1
         self.vel = np.array([.0, .0])
-        self.pos = self.r_pos() + np.array([random() / 1000, -self.length])
+        self.pos = self.r_pos() + clip(np.array([((random() > 0.5) * 2 - 1) * 3, -self.length]), self.length)
     
     def r_pos(self):
         return self.root.pos + self.root.size / 2
@@ -33,7 +33,15 @@ class Pendulum(Object):
         self.vel = self.vel * 0.999
         self.pos += self.vel
     
+    def sprite(self):
+        sprite = pygame.Surface(self.size)
+        sprite = sprite.convert()
+        sprite.fill((0, 0, 0))
+        sprite.set_alpha(25)
+        return sprite
+    
     def render(self, screen):
-        pygame.draw.line(screen, (0, 0, 0), self.r_pos(), self.pos, 3)
         pygame.draw.circle(screen, (0, 0, 0), self.pos, 10)
+        pygame.draw.line(screen, (0, 0, 0, 25), self.r_pos(), self.pos, 3)
+        # screen.blit(self.sprite(), self.pos)
         return True

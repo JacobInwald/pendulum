@@ -17,6 +17,7 @@ class Object:
         sprite = pygame.Surface(self.size)
         sprite = sprite.convert()
         sprite.fill((0, 0, 0))
+        sprite.set_alpha(25)
         return sprite
 
 

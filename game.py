@@ -3,17 +3,16 @@ from pygame.locals import *
 import numpy as np
 from random import random
 from objects import *
-
+import time as time
 
 class Game:
 
-    def __init__(self):
+    def __init__(self, size):
         pygame.init()
         self._running = True
-        self.size = self.width, self.height = 640, 400
+        self.size = self.width, self.height = size
         
         self.screen = pygame.display.set_mode(self.size)
-        pygame.display.set_caption('Balance a pendulum')
         
         # player variables
         self.player = Player([320.0, 300.0], [50.0, 10.0], '_player')
@@ -52,14 +51,32 @@ class Game:
             if event.type == QUIT:
                 self._running = False
                     
+    def run_step(self):
+        fail_timer = 2
+        then = 0
+        
+        self.check_quit()
+        
+        self.update()
+                
+        self.render()
+        
+        if self.pendulum.pos[1] > self.player.pos[1] + 20:
+            if then == 0:
+                then = time.time()
+                
+            fail_timer -= time.time() - then
+            then = time.time()
+            if fail_timer <= 0:
+                self._running = False
+        else:
+            fail_timer = 2
+            then = 0
+    
     def run(self):
-        # Event loop
         while self._running:
-            self.check_quit()
+            self.run_step()
+            pygame.display.flip()
+        pygame.quit()
             
-            self.update()
-                 
-            self.render()
-            
-g = Game()
-g.run()
+g = Game((640, 480))

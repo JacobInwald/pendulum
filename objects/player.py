@@ -11,7 +11,7 @@ class Player(Object):
         super().__init__(pos, size, id)
         self.is_gravity = True
         self.is_collision = True
-        self.speed = 1
+        self.speed = 3
     
     
     def update_movement(self, dir):
@@ -24,7 +24,7 @@ class Player(Object):
     
     
     def update(self, keys, others):
-        dir = np.array([keys[K_RIGHT] - keys[K_LEFT], keys[K_DOWN] - keys[K_UP]])
+        dir = np.array([keys[K_RIGHT] - keys[K_LEFT], 0])
         self.update_movement(dir)
 
         self.pos = self.pos + self.vel
