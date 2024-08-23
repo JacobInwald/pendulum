@@ -80,3 +80,4 @@ class Game:
         pygame.quit()
             
 g = Game((640, 480))
+g.run()

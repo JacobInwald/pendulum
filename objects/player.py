@@ -11,7 +11,7 @@ class Player(Object):
         super().__init__(pos, size, id)
         self.is_gravity = True
         self.is_collision = True
-        self.speed = 25
+        self.speed = 200
         self.update_time = time()
     
     
