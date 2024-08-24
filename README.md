@@ -9,10 +9,10 @@ Running this is more of a demo of this training technique than a game.
 ## Installation
 1. Install all the requirements from the requirements.txt
 2. To play the game yourself, you can run `python game.py`
-3. To see the genetic algorithm learn, you can run `python trainer.py`. If you want to edit the variables such as `gen_size`, go into the `trainer.py` and fiddle all you want.
-  a. Clicking on the window will spawn your mouse cursor as a box with collision if you want to mess around with the networks.
+3. To see the genetic algorithm learn, you can run `python trainer.py`. If you want to edit the variables such as `gen_size`, go into the `trainer.py` and fiddle all you want
+
 
 ## Misc
-Report any other errors under issues, and I may or may not get onto to solving it.
-
-Enjoy!!!
+- Clicking on the window will spawn your mouse cursor as a box with collision if you want to mess around with the networks.
+- Report any other errors under issues, and I may or may not get onto to solving it.
+- Enjoy!!!
