@@ -3,8 +3,8 @@
 ## Introduction
 A foray into genetic algorithms.
 I wrote a quick pendulum balancing game, and then wrote a neural network that tried to get highscores in it. 
-This was trained with a genetic algorithm
-Running this is more of a demo of 
+This was trained with a genetic algorithm.
+Running this is more of a demo of this training technique than a game. 
 
 ## Installation
 1. Install all the requirements from the requirements.txt
