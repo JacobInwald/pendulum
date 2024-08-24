@@ -37,6 +37,9 @@ class Pendulum(Object):
         self.vel = np.dot(self.vel, tangential) * tangential
         self.vel = self.vel * 0.999
         self.pos += self.vel * deltaTime
+        
+        if self.is_collision:
+            self.update_collision(others)
     
 
     def render(self, screen):

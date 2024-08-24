@@ -17,9 +17,9 @@ class Game:
         # player variables
         self.player = Player([320.0, 300.0], [50.0, 10.0], '_player')
         self.pendulum = Pendulum([320.0, 100.0], [10, 10], '_pendulum', self.player)
-        
-        l_wall = Object([-10, 0], [10, self.height], '_l_wall')
-        r_wall = Object([self.width, 0], [10, self.height], '_r_wall')
+        self.pendulum.is_collision = True
+        l_wall = Object([-500, 0], [500, self.height], '_l_wall')
+        r_wall = Object([self.width, 0], [500, self.height], '_r_wall')
         self.objects = [self.player, self.pendulum, l_wall, r_wall]
 
 

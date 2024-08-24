@@ -11,14 +11,38 @@ class Object:
         self.vel = np.array([0.0, 0.0])
         self.is_gravity = False
         self.is_collision = True
+        self.is_render = True
 
 
     def render(self, screen):
-        pygame.draw.rect(screen, (10, 10, 10), pygame.Rect(*self.pos, *self.size))
+        if self.is_render:
+            pygame.draw.rect(screen, (10, 10, 10), pygame.Rect(*self.pos, *self.size))
         return True
     
     def update(self, keys, others):
         pass
+    
+    
+    def update_collision(self, others):
+        for other in others:
+            if self.is_colliding(other):
+                self.resolve_collision(other)
+    
+    def resolve_collision(self, other):
+        if not self.is_colliding(other):
+            return
+        
+        collision_right = self.pos[0] + self.size[0] - other.pos[0]
+        collision_left = other.pos[0] + other.size[0] - self.pos[0]
+    
+        if collision_right < collision_left:
+            self.pos[0] = other.pos[0] - self.size[0] - 1
+            self.vel[0] = - np.abs(self.vel[0])
+        elif collision_left < collision_right:
+            self.pos[0] = other.pos[0] + other.size[0] + 1
+            self.vel[0] = np.abs(self.vel[0])
+        
+        
     
     def get_collision_rect(self, other):
         x1, y1 = self.pos
@@ -36,3 +60,5 @@ class Object:
         return self is not other and \
             self.is_collision and other.is_collision and \
             not is_degenerate_rect(self.get_collision_rect(other))
+            
+    

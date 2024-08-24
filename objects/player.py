@@ -29,12 +29,13 @@ class Player(Object):
         self.update_time = time()
         dir = np.array([keys[K_RIGHT] - keys[K_LEFT], 0])
         self.update_movement(dir)
+        
 
         self.pos = self.pos + self.vel * deltaTime
-        
-        while any(self.is_colliding(other) for other in others):
-            self.pos -= self.vel
-            self.vel = np.array([0.0, 0.0])
             
         self.update_friction()
+        
+        if self.is_collision:
+            self.update_collision(others)
+        
     

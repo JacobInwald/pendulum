@@ -21,9 +21,12 @@ class Game:
         self.player = Player([320.0, 300.0], [50.0, 10.0], '_player')
         self.pendulum = Pendulum([320.0, 100.0], [10, 10], '_pendulum', self.player)
         
+        self.mouse_circle = Object([0, 0], [40, 40], '_mouse')
+        self.mouse_circle.is_collision = False
+        
         l_wall = Object([-10, 0], [10, self.height], '_l_wall')
         r_wall = Object([self.width, 0], [10, self.height], '_r_wall')
-        self.objects = [self.player, self.pendulum, l_wall, r_wall]
+        self.objects = [self.player, self.pendulum, self.mouse_circle, l_wall, r_wall]
 
     
     def inputs(self):
@@ -49,9 +52,15 @@ class Game:
         
                     
     def run_step(self, inp={K_LEFT: 0, K_RIGHT: 0}):
+        self.pendulum.is_collision = pygame.mouse.get_pressed()[0]
+        self.mouse_circle.is_render = pygame.mouse.get_pressed()[0]
+        self.mouse_circle.is_collision = pygame.mouse.get_pressed()[0]
+        self.mouse_circle.pos = np.array(pygame.mouse.get_pos()) - self.mouse_circle.size / 2
+
         self.update(inp)
-                
+        
         self.render()
+        
         
         if self.pendulum.pos[1] > self.player.pos[1] + 40:
             self._running = False

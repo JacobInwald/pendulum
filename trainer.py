@@ -7,7 +7,7 @@ from time import time
 import sys
 
 
-def convert_to_rgb(val, minval=-1, maxval=+1, colors=[(0, 0, 255), (0, 255, 0), (255, 0, 0)]):
+def convert_to_rgb(val, minval=-1, maxval=+1, colors=[(0, 255, 0), (255, 0, 0)]):
     i_f = float(val-minval) / float(maxval-minval) * (len(colors)-1)
     i, f = int(i_f // 1), i_f % 1
     
@@ -30,75 +30,73 @@ def feed_forward(inp, w1, w2, display=False):
     o_out[0] = 0 if o_out[0] < 0 else 1
     o_out[1] = 0 if o_out[1] < 0 else 1
     o_out = {K_LEFT: int(o_out[0]), K_RIGHT: int(o_out[1])}
-    
-    if display:
-        
-        cap = 2e-1
-        
-        surf = pygame.Surface((200, 100))
-        surf.fill((240, 240, 240))
-        
-        if (np.abs(w1) > cap).any():
-            cap = int(np.max(np.abs(w1))) + 1
-        if (np.abs(w2) > cap).any():
-            cap = int(np.max(np.abs(w2))) + 1
-            
-        # First layer Weights
-        pygame.draw.line(surf, convert_to_rgb(w1[0][0], maxval=cap+0.1, minval=-cap-0.1), (20, 20), (80, 20), width=2)
-        pygame.draw.line(surf, convert_to_rgb(w1[0][1], maxval=cap+0.1, minval=-cap-0.1), (20, 20), (80, 50), width=2)
-        pygame.draw.line(surf, convert_to_rgb(w1[0][2], maxval=cap+0.1, minval=-cap-0.1), (20, 20), (80, 80), width=2)
-        
-        pygame.draw.line(surf, convert_to_rgb(w1[1][0], maxval=cap+0.1, minval=-cap-0.1), (20, 50), (80, 20), width=2)
-        pygame.draw.line(surf, convert_to_rgb(w1[1][1], maxval=cap+0.1, minval=-cap-0.1), (20, 50), (80, 50), width=2)
-        pygame.draw.line(surf, convert_to_rgb(w1[1][2], maxval=cap+0.1, minval=-cap-0.1), (20, 50), (80, 80), width=2)
-        
-        pygame.draw.line(surf, convert_to_rgb(w1[2][0], maxval=cap+0.1, minval=-cap-0.1), (20, 80), (80, 20), width=2)
-        pygame.draw.line(surf, convert_to_rgb(w1[2][1], maxval=cap+0.1, minval=-cap-0.1), (20, 80), (80, 50), width=2)
-        pygame.draw.line(surf, convert_to_rgb(w1[2][2], maxval=cap+0.1, minval=-cap-0.1), (20, 80), (80, 80), width=2)
-        
-        # Second layer Weights
-        pygame.draw.line(surf, convert_to_rgb(w2[0][0], maxval=cap+0.1, minval=-cap-0.1), (140, 35), (80, 20), width=2)
-        pygame.draw.line(surf, convert_to_rgb(w2[0][1], maxval=cap+0.1, minval=-cap-0.1), (140, 35), (80, 50), width=2)
-        pygame.draw.line(surf, convert_to_rgb(w2[0][2], maxval=cap+0.1, minval=-cap-0.1), (140, 35), (80, 80), width=2)
-        
-        pygame.draw.line(surf, convert_to_rgb(w2[1][0], maxval=cap+0.1, minval=-cap-0.1), (140, 65), (80, 20), width=2)
-        pygame.draw.line(surf, convert_to_rgb(w2[1][1], maxval=cap+0.1, minval=-cap-0.1), (140, 65), (80, 50), width=2)
-        pygame.draw.line(surf, convert_to_rgb(w2[1][2], maxval=cap+0.1, minval=-cap-0.1), (140, 65), (80, 80), width=2)
-        
-        
-        # Layer 1 Circles
-        pygame.draw.circle(surf, (10, 10, 10), (20, 20), 12, width=0)
-        pygame.draw.circle(surf, (10, 10, 10), (20, 50), 12, width=0)
-        pygame.draw.circle(surf, (10, 10, 10), (20, 80), 12, width=0)
-        # Layer 2 Circles
-        pygame.draw.circle(surf, (10, 10, 10), (80, 20), 12, width=0)
-        pygame.draw.circle(surf, (10, 10, 10), (80, 50), 12, width=0)
-        pygame.draw.circle(surf, (10, 10, 10), (80, 80), 12, width=0)
-        
-        # Layer 3 Circles
-        pygame.draw.circle(surf, (10, 10, 10), (140, 35), 12, width=0)
-        pygame.draw.circle(surf, (10, 10, 10), (140, 65), 12, width=0)
-        
-        
-        # Heatmap Key
-        font = pygame.font.Font(None, 20)
-        textSurface = font.render(f"-{cap}", 1, (0, 0, 255))
-        textSurface1 = font.render("0", 1, (0, 255, 0))
-        textSurface2 = font.render(f"{cap}", 1, (255, 0, 0))
-        textRect = textSurface.get_rect()
-        textRect1 = textSurface1.get_rect()
-        textRect2 = textSurface2.get_rect()
-        textRect.center = (180, 80)
-        textRect1.center = (180, 50)
-        textRect2.center = (180, 20)
-        surf.blit(textSurface, textRect)
-        surf.blit(textSurface1, textRect1)
-        surf.blit(textSurface2, textRect2)
-        
-        
-        return surf
-    
     return o_out
+
+def display(w1, w2):
+    cap = 1e-3
+    
+    surf = pygame.Surface((200, 100))
+    surf.fill((240, 240, 240))
+    
+    if (np.abs(w1) > cap).any():
+        cap = (int(np.max(np.abs(w1))*100) + 1) / 100
+    if (np.abs(w2) > cap).any():
+        cap = (int(np.max(np.abs(w2))*100) + 1) / 100
+        
+    # First layer Weights
+    pygame.draw.line(surf, convert_to_rgb(w1[0][0], maxval=cap+0.1, minval=-cap-0.1), (20, 20), (80, 20), width=3)
+    pygame.draw.line(surf, convert_to_rgb(w1[0][1], maxval=cap+0.1, minval=-cap-0.1), (20, 20), (80, 50), width=3)
+    pygame.draw.line(surf, convert_to_rgb(w1[0][2], maxval=cap+0.1, minval=-cap-0.1), (20, 20), (80, 80), width=3)
+    
+    pygame.draw.line(surf, convert_to_rgb(w1[1][0], maxval=cap+0.1, minval=-cap-0.1), (20, 50), (80, 20), width=3)
+    pygame.draw.line(surf, convert_to_rgb(w1[1][1], maxval=cap+0.1, minval=-cap-0.1), (20, 50), (80, 50), width=3)
+    pygame.draw.line(surf, convert_to_rgb(w1[1][2], maxval=cap+0.1, minval=-cap-0.1), (20, 50), (80, 80), width=3)
+    
+    pygame.draw.line(surf, convert_to_rgb(w1[2][0], maxval=cap+0.1, minval=-cap-0.1), (20, 80), (80, 20), width=3)
+    pygame.draw.line(surf, convert_to_rgb(w1[2][1], maxval=cap+0.1, minval=-cap-0.1), (20, 80), (80, 50), width=3)
+    pygame.draw.line(surf, convert_to_rgb(w1[2][2], maxval=cap+0.1, minval=-cap-0.1), (20, 80), (80, 80), width=3)
+    
+    # Second layer Weights
+    pygame.draw.line(surf, convert_to_rgb(w2[0][0], maxval=cap+0.1, minval=-cap-0.1), (140, 35), (80, 20), width=3)
+    pygame.draw.line(surf, convert_to_rgb(w2[0][1], maxval=cap+0.1, minval=-cap-0.1), (140, 35), (80, 50), width=3)
+    pygame.draw.line(surf, convert_to_rgb(w2[0][2], maxval=cap+0.1, minval=-cap-0.1), (140, 35), (80, 80), width=3)
+    
+    pygame.draw.line(surf, convert_to_rgb(w2[1][0], maxval=cap+0.1, minval=-cap-0.1), (140, 65), (80, 20), width=3)
+    pygame.draw.line(surf, convert_to_rgb(w2[1][1], maxval=cap+0.1, minval=-cap-0.1), (140, 65), (80, 50), width=3)
+    pygame.draw.line(surf, convert_to_rgb(w2[1][2], maxval=cap+0.1, minval=-cap-0.1), (140, 65), (80, 80), width=3)
+    
+    
+    # Layer 1 Circles
+    pygame.draw.circle(surf, (10, 10, 10), (20, 20), 12, width=0)
+    pygame.draw.circle(surf, (10, 10, 10), (20, 50), 12, width=0)
+    pygame.draw.circle(surf, (10, 10, 10), (20, 80), 12, width=0)
+    # Layer 2 Circles
+    pygame.draw.circle(surf, (10, 10, 10), (80, 20), 12, width=0)
+    pygame.draw.circle(surf, (10, 10, 10), (80, 50), 12, width=0)
+    pygame.draw.circle(surf, (10, 10, 10), (80, 80), 12, width=0)
+    
+    # Layer 3 Circles
+    pygame.draw.circle(surf, (10, 10, 10), (140, 35), 12, width=0)
+    pygame.draw.circle(surf, (10, 10, 10), (140, 65), 12, width=0)
+    
+    
+    # Heatmap Key
+    font = pygame.font.Font(None, 20)
+    textSurface = font.render(f"-{cap}", 1, (0, 0, 255))
+    textSurface1 = font.render("0", 1, (0, 255, 0))
+    textSurface2 = font.render(f"{cap}", 1, (255, 0, 0))
+    textRect = textSurface.get_rect()
+    textRect1 = textSurface1.get_rect()
+    textRect2 = textSurface2.get_rect()
+    textRect.center = (180, 80)
+    textRect1.center = (180, 50)
+    textRect2.center = (180, 20)
+    surf.blit(textSurface, textRect)
+    surf.blit(textSurface1, textRect1)
+    surf.blit(textSurface2, textRect2)
+    
+    
+    return surf
 
 def merge(w_1,  w_2, lr=1e-6, cap=1):
     w1_1, w2_1 = w_1
@@ -180,7 +178,7 @@ class GeneticTraining:
 
             # Show the best ones network
             best = self.gen[np.argmax(self.fitness)]
-            surf = feed_forward(games[np.argmax(self.fitness)].inputs(), *best, display=True)
+            surf = display(*best)
             self.screen.blit(surf, (420, 40))
             
             
@@ -214,5 +212,5 @@ class GeneticTraining:
 
         
 
-g = GeneticTraining(100, 0.1, 0.1)
+g = GeneticTraining(250, 0.1, 1e-2)
 g.run(100)
