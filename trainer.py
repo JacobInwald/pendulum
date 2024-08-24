@@ -17,10 +17,11 @@ def convert_to_rgb(val, minval=-1, maxval=+1, colors=[(0, 255, 0), (255, 0, 0)])
         (r1, g1, b1), (r2, g2, b2) = colors[i], colors[i+1]
         return int(r1 + f*(r2-r1)), int(g1 + f*(g2-g1)), int(b1 + f*(b2-b1))
 
-def new_network():
-    w1 = (np.random.rand(3, 3) - 0.5) * 1e-3
-    w2 = (np.random.rand(2, 3) - 0.5) * 1e-3
+def new_network(struct):
+    w1 = (np.random.rand(struct[1], struct[0]) - 0.5) * 1e-3
+    w2 = (np.random.rand(struct[2], struct[1]) - 0.5) * 1e-3
     return w1, w2
+
 
 def feed_forward(inp, w1, w2, display=False):
     hid = np.dot(w1, inp)
@@ -32,10 +33,11 @@ def feed_forward(inp, w1, w2, display=False):
     o_out = {K_LEFT: int(o_out[0]), K_RIGHT: int(o_out[1])}
     return o_out
 
+
 def display(w1, w2):
     cap = 1e-3
     
-    surf = pygame.Surface((200, 100))
+    surf = pygame.Surface((200, 40+20*len(w1[0])+10))
     surf.fill((240, 240, 240))
     
     if (np.abs(w1) > cap).any():
@@ -43,41 +45,30 @@ def display(w1, w2):
     if (np.abs(w2) > cap).any():
         cap = (int(np.max(np.abs(w2))*100) + 1) / 100
         
-    # First layer Weights
-    pygame.draw.line(surf, convert_to_rgb(w1[0][0], maxval=cap+0.1, minval=-cap-0.1), (20, 20), (80, 20), width=3)
-    pygame.draw.line(surf, convert_to_rgb(w1[0][1], maxval=cap+0.1, minval=-cap-0.1), (20, 20), (80, 50), width=3)
-    pygame.draw.line(surf, convert_to_rgb(w1[0][2], maxval=cap+0.1, minval=-cap-0.1), (20, 20), (80, 80), width=3)
+
+    # Weights
+    for i in range(len(w1)):
+        for j in range(len(w1[i])):
+            pygame.draw.line(surf, convert_to_rgb(w1[i][j], -cap, cap), (20, 20 + 20 * i), (80, 20 + 20 * j), width=2)
     
-    pygame.draw.line(surf, convert_to_rgb(w1[1][0], maxval=cap+0.1, minval=-cap-0.1), (20, 50), (80, 20), width=3)
-    pygame.draw.line(surf, convert_to_rgb(w1[1][1], maxval=cap+0.1, minval=-cap-0.1), (20, 50), (80, 50), width=3)
-    pygame.draw.line(surf, convert_to_rgb(w1[1][2], maxval=cap+0.1, minval=-cap-0.1), (20, 50), (80, 80), width=3)
+    for i in range(len(w2)):
+        for j in range(len(w2[i])):
+            pygame.draw.line(surf, convert_to_rgb(w1[i][j], -cap, cap), (80, 20 + 20 * j), (140, 30 + 20 * (i + len(w1[0]) // 2 - 1)), width=2)
     
-    pygame.draw.line(surf, convert_to_rgb(w1[2][0], maxval=cap+0.1, minval=-cap-0.1), (20, 80), (80, 20), width=3)
-    pygame.draw.line(surf, convert_to_rgb(w1[2][1], maxval=cap+0.1, minval=-cap-0.1), (20, 80), (80, 50), width=3)
-    pygame.draw.line(surf, convert_to_rgb(w1[2][2], maxval=cap+0.1, minval=-cap-0.1), (20, 80), (80, 80), width=3)
-    
-    # Second layer Weights
-    pygame.draw.line(surf, convert_to_rgb(w2[0][0], maxval=cap+0.1, minval=-cap-0.1), (140, 35), (80, 20), width=3)
-    pygame.draw.line(surf, convert_to_rgb(w2[0][1], maxval=cap+0.1, minval=-cap-0.1), (140, 35), (80, 50), width=3)
-    pygame.draw.line(surf, convert_to_rgb(w2[0][2], maxval=cap+0.1, minval=-cap-0.1), (140, 35), (80, 80), width=3)
-    
-    pygame.draw.line(surf, convert_to_rgb(w2[1][0], maxval=cap+0.1, minval=-cap-0.1), (140, 65), (80, 20), width=3)
-    pygame.draw.line(surf, convert_to_rgb(w2[1][1], maxval=cap+0.1, minval=-cap-0.1), (140, 65), (80, 50), width=3)
-    pygame.draw.line(surf, convert_to_rgb(w2[1][2], maxval=cap+0.1, minval=-cap-0.1), (140, 65), (80, 80), width=3)
-    
-    
+
     # Layer 1 Circles
-    pygame.draw.circle(surf, (10, 10, 10), (20, 20), 12, width=0)
-    pygame.draw.circle(surf, (10, 10, 10), (20, 50), 12, width=0)
-    pygame.draw.circle(surf, (10, 10, 10), (20, 80), 12, width=0)
-    # Layer 2 Circles
-    pygame.draw.circle(surf, (10, 10, 10), (80, 20), 12, width=0)
-    pygame.draw.circle(surf, (10, 10, 10), (80, 50), 12, width=0)
-    pygame.draw.circle(surf, (10, 10, 10), (80, 80), 12, width=0)
+    for i in range(len(w1[0])):
+        pygame.draw.circle(surf, (10, 10, 10), (20, 20 + 20 * i), 8, width=0)
     
+    # Layer 2 Circles
+    for i in range(len(w1[1])):
+        pygame.draw.circle(surf, (10, 10, 10), (80, 20 + 20 * i), 8, width=0)
+        
     # Layer 3 Circles
-    pygame.draw.circle(surf, (10, 10, 10), (140, 35), 12, width=0)
-    pygame.draw.circle(surf, (10, 10, 10), (140, 65), 12, width=0)
+    for i in range(2):
+        pygame.draw.circle(surf, (10, 10, 10), (140, 30 + 20 * (i + len(w1[0]) // 2 - 1)), 8, width=0)
+    
+    
     
     
     # Heatmap Key
@@ -98,6 +89,7 @@ def display(w1, w2):
     
     return surf
 
+
 def merge(w_1,  w_2, lr=1e-6, cap=1):
     w1_1, w2_1 = w_1
     w1_2, w2_2 = w_2
@@ -117,20 +109,29 @@ def merge(w_1,  w_2, lr=1e-6, cap=1):
 
 class GeneticTraining:
     
-    def __init__(self, gen_size, mutation_rate, mutation_size):
+    def __init__(self, gen_size, mutation_rate, mutation_size, num_pendulums=1):
+        # Genetic Algorithm Parameters
         self.gen_size = gen_size
         self.mutation_rate = mutation_rate
         self.mutation_size = mutation_size
-        self.gen = [new_network() for _ in range(gen_size)]
+        self._running = True
+        self.size = self.width, self.height = 640, 350
+        self.screen = pygame.display.set_mode(self.size)
+
+        # Game Parameters
+        self.num_pends = num_pendulums
+        self.struct = [self.num_pends * 2 + 1,
+                       self.num_pends * 2 + 1,
+                       2]
+        
+        # Neural Network Parameters
+        self.gen = [new_network(self.struct) for _ in range(gen_size)]
         self.fitness = [0 for _ in range(gen_size)]
         self.best = None
         self.best_fitness = 0
         self.generation = 0
-        self.gen_num = 1
+        
         pygame.init()
-        self._running = True
-        self.size = self.width, self.height = 640, 350
-        self.screen = pygame.display.set_mode(self.size)
         
     
     def check_quit(self):
@@ -147,7 +148,7 @@ class GeneticTraining:
         return textSurface, textRect
     
     def run_generation(self):
-        games = [Game(self.screen, self.size) for _ in self.gen]
+        games = [Game(self.screen, self.size, num_pends=self.num_pends) for _ in self.gen]
         any_running = True
         frame_count = 0
         
@@ -155,7 +156,7 @@ class GeneticTraining:
         background = background.convert()
         background.fill((240, 240, 240))
         
-        title_str = f"Generation Number {self.gen_num} | Size: {len(self.gen)} | Prev Best: {self.best_fitness:.2f}"
+        title_str = f"Generation Number {self.generation} | Size: {len(self.gen)} | Prev Best: {self.best_fitness:.2f}"
         frame_st = time()
         while any_running:
             for event in pygame.event.get():
@@ -165,6 +166,9 @@ class GeneticTraining:
             self.fitness = [frame_count / 60 if game._running else self.fitness[i] for i, game in enumerate(games)]
             
             self.screen.blit(background, (0, 0))
+            best = self.gen[np.argmax(self.fitness)]
+            surf = display(*best)
+            self.screen.blit(surf, (420, 40))
             
             for i, game in enumerate(games):
                 if game._running:
@@ -185,13 +189,12 @@ class GeneticTraining:
             pygame.display.flip()
             frame_count += 1
             
-        self.gen_num += 1
+        self.generation += 1
     
     
     def mutate(self, w1, w2):
-        w1 = w1 + (np.random.rand(3, 3) - 0.5) * self.mutation_size
-        w2 = w2 + (np.random.rand(2, 3) - 0.5) * self.mutation_size
-        return w1, w2
+        n_w1, n_w2 = new_network(self.struct)
+        return w1 + n_w1, w2 + n_w2
     
     
     def evolve(self):
@@ -200,7 +203,6 @@ class GeneticTraining:
         self.gen = [self.best]
         self.gen += [merge(self.best, random.choice(self.gen)) for _ in range(self.gen_size - 1)]
         self.gen = [self.mutate(w1, w2) for w1, w2 in self.gen]
-        self.generation += 1
     
     
     def run(self, epochs):
@@ -212,5 +214,5 @@ class GeneticTraining:
 
         
 
-g = GeneticTraining(250, 0.1, 1e-2)
+g = GeneticTraining(250, 0.1, 1e-2, 2)
 g.run(100)

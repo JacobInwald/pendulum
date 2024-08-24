@@ -7,28 +7,29 @@ import time as time
 
 class Game:
 
-    def __init__(self, size):
+    def __init__(self, size, num_pends=1):
         pygame.init()
         self._running = True
         self.size = self.width, self.height = size
         
         self.screen = pygame.display.set_mode(self.size)
         
-        # player variables
         self.player = Player([320.0, 300.0], [50.0, 10.0], '_player')
-        self.pendulum = Pendulum([320.0, 100.0], [10, 10], '_pendulum', self.player)
-        self.pendulum.is_collision = True
-        l_wall = Object([-500, 0], [500, self.height], '_l_wall')
-        r_wall = Object([self.width, 0], [500, self.height], '_r_wall')
-        self.objects = [self.player, self.pendulum, l_wall, r_wall]
+        self.objects = [self.player]
+        
+        for i in range(num_pends):
+            self.objects.append(Pendulum([320.0, 100.0], [10, 10], f'_pendulum_{i}', self.objects[i]))
+        
+        l_wall = Object([-10, 0], [10, self.height], '_l_wall')
+        r_wall = Object([self.width, 0], [10, self.height], '_r_wall')
+        
+        self.objects.extend([l_wall, r_wall])
 
 
     def background(self):
         background = pygame.Surface(self.screen.get_size())
         background = background.convert()
         colour = (240, 240, 240)
-        if self.pendulum.pos[1] > self.player.pos[1] + 20:
-            colour = (255, 0, 0)
         background.fill(colour)
         return background
     
@@ -52,8 +53,6 @@ class Game:
                 self._running = False
                     
     def run_step(self):
-        fail_timer = 2
-        then = 0
         
         self.check_quit()
         
@@ -61,17 +60,6 @@ class Game:
                 
         self.render()
         
-        if self.pendulum.pos[1] > self.player.pos[1] + 20:
-            if then == 0:
-                then = time.time()
-                
-            fail_timer -= time.time() - then
-            then = time.time()
-            if fail_timer <= 0:
-                self._running = False
-        else:
-            fail_timer = 2
-            then = 0
     
     def run(self):
         while self._running:
@@ -79,5 +67,5 @@ class Game:
             pygame.display.flip()
         pygame.quit()
             
-g = Game((640, 480))
+g = Game((640, 480), num_pends=2)
 g.run()

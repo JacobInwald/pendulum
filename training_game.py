@@ -7,7 +7,7 @@ import time as time
 
 class Game:
 
-    def __init__(self, screen, size, alpha=None):
+    def __init__(self, screen, size, num_pends=1, alpha=None):
         self._running = True
         self.size = self.width, self.height = size
         
@@ -19,25 +19,30 @@ class Game:
         self.alpha_screen.set_alpha(alpha)
         # player variables
         self.player = Player([320.0, 300.0], [50.0, 10.0], '_player')
-        self.pendulum = Pendulum([320.0, 100.0], [10, 10], '_pendulum', self.player)
+        self.objects = [self.player]
+        
+        for i in range(num_pends):
+            self.objects.append(Pendulum([320.0, 100.0], [10, 10], f'_pendulum_{i}', self.objects[i]))
         
         self.mouse_circle = Object([0, 0], [40, 40], '_mouse')
         self.mouse_circle.is_collision = False
         
         l_wall = Object([-10, 0], [10, self.height], '_l_wall')
         r_wall = Object([self.width, 0], [10, self.height], '_r_wall')
-        self.objects = [self.player, self.pendulum, self.mouse_circle, l_wall, r_wall]
+        
+        self.objects.extend([self.mouse_circle, l_wall, r_wall])
 
     
     def inputs(self):
-        return np.array([self.player.pos[0], self.pendulum.pos[0], self.pendulum.pos[1]])
+        inps = [self.player.pos[0]]
+        for obj in self.objects[1:-3]:
+            inps.extend([obj.pos[0], obj.pos[1]])
+        return np.array(inps)
     
     
     def render(self):
-        # self.alpha = None
         if self.alpha:
             self.alpha_screen.fill((240, 240, 240))
-            # self.alpha_screen.set_alpha(self.alpha)
             for obj in self.objects:
                 obj.render(self.alpha_screen)
             self.screen.blit(self.alpha_screen, (0, 0))
@@ -52,7 +57,8 @@ class Game:
         
                     
     def run_step(self, inp={K_LEFT: 0, K_RIGHT: 0}):
-        self.pendulum.is_collision = pygame.mouse.get_pressed()[0]
+        for obj in self.objects[1:-3]:
+            obj.is_collision = pygame.mouse.get_pressed()[0] 
         self.mouse_circle.is_render = pygame.mouse.get_pressed()[0]
         self.mouse_circle.is_collision = pygame.mouse.get_pressed()[0]
         self.mouse_circle.pos = np.array(pygame.mouse.get_pos()) - self.mouse_circle.size / 2
@@ -61,9 +67,10 @@ class Game:
         
         self.render()
         
-        
-        if self.pendulum.pos[1] > self.player.pos[1] + 40:
-            self._running = False
-            return False
+        pends = self.objects[1:-3]
+        for i in range(len(pends)):
+            if self.objects[i+1].pos[1] > self.objects[i].pos[1] + 20:
+                self._running = False
+                return False
         
         return True
