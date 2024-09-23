@@ -67,5 +67,5 @@ class Game:
             pygame.display.flip()
         pygame.quit()
             
-g = Game((640, 480), num_pends=2)
+g = Game((640, 480), num_pends=3)
 g.run()

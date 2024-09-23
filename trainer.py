@@ -214,5 +214,5 @@ class GeneticTraining:
 
         
 
-g = GeneticTraining(250, 0.1, 1e-2, 2)
+g = GeneticTraining(500, 0.1, 1e-2, 1)
 g.run(100)
